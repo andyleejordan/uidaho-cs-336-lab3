@@ -1,4 +1,4 @@
-Copyright 2013, Andrew Schwartzmeyer
+Copyright 2013, Andrew Schwartzmeyer and Shea Newt
 All rights reserved.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
