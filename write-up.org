@@ -28,6 +28,70 @@ configuration file =/etc/php5/apache2/php.ini= and change the line
 these changes live, we execute the command =sudo service apache2
 restart=. (Du 3)
 
+** Lab Task 1: Exploiting the login prompt
+
+The Collabtive web app on our virtual machine implements its user
+authentication using the file
+=/var/www/SQL/Collabtive/include/class.user.php=, which executes a SQL
+query using the specified user and password parameters to determine if
+a record exists which matches the pair of inputs. If so, it
+authenticates the user. Unfortunately, the function looks like this:
+
+#+BEGIN_SRC php
+      function login($user, $pass)
+      {
+          if (!$user)
+          {
+              return false;
+          }
+  
+  //modified for SQL Lab
+          //$user = mysql_real_escape_string($user);
+          //$pass = mysql_real_escape_string($pass);
+          $pass = sha1($pass);
+  
+          $sel1 = mysql_query("SELECT ID,name,locale,lastlogin,gender FROM user WHERE (name =  '$user' OR email = '$user') AND pass = '$pass'");
+          $chk = mysql_fetch_array($sel1);
+          if ($chk["ID"] != "")
+          {
+              // New user session object and cookie creation code
+              // removed for brevity
+              return true;
+          }
+          else
+          {
+              return false;
+          }
+      }
+#+END_SRC
+
+Note specifically that the authors of the lab disabled the input
+sanitization of the variables =$user= and =$pass= by commenting out
+the exeuction of =mysql_real_escape_string()= on them. This leaves us
+with the following SQL query executed by the PHP script, where both
+=$user= and =$pass= are susceptible to an injection attack:
+
+#+BEGIN_SRC sql
+  SELECT ID,name,locale,lastlogin,gender FROM user WHERE (name = '$user'
+  OR email = '$user') AND pass = '$pass'"
+#+END_SRC
+
+*** Task 1.1: Can you log into another person’s account without knowing the correct password?
+
+We sure can! The key is being able to inject whatever SQL code we want
+into the =$user= parameter, which is ahead of the =AND= conditional
+password check in the =WHERE= clause. Hence, entering =​admin'); # '​=
+into the user field bypasses the password check and logs us in. This
+is because we complete the =name= predicate with the user =admin=
+followed by a =​'​= followed by a =)=, which matches the =​'​= and =(=
+before them in the query, then add a =;= to complete the query,
+followed by a =#=, which comments out the rest of the query in the
+original statement from the PHP code, and finally followed with a =​'​=
+to match the trailing one surrounding our user input. We can enter
+anything (or nothing) for the password, and be logged in as the
+=admin= user, because the SQL code that was supposed to check the
+password was disabled by our attack.
+
 * Answers
 
 * Code
