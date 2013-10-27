@@ -12,11 +12,27 @@
 | Author Name:       | Andrew Schwartzmeyer, Shea Newt             |
 
 * Abstract
+
 * Problem and Background
+
 * Problem Detail
+
 * Tasks
+
+** Turn off PHP Magic Quote Countermeasure
+
+Prior to version 5.3.0, PHP enabled a countermeasure to SQL injection
+attacks called "Magic Quote". To disable this, we simply edit the PHP
+configuration file =/etc/php5/apache2/php.ini= and change the line
+=magic quotes gpc = On= to =magic quotes gpc = Off=; finally, to make
+these changes live, we execute the command =sudo service apache2
+restart=. (Du 3)
+
 * Answers
+
 * Code
+
 * References
+
 Du, Wenliang. 2006-2013. "SQL Injection Attack Lab - Using
 Collabtive". http://www.cis.syr.edu/~wedu/seed/Labs/Web/SQL_Injection_Collabtive/
