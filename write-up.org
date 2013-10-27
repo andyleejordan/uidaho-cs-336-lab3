@@ -1,0 +1,22 @@
+#+TITLE: 2013-FA-CS-336-LA-03-AndyS-SheaN
+#+AUTHOR: Andrew Schwartzmeyer, Shea Newt
+#+OPTIONS: toc:nil
+
+| Year and Semester: | 2013 FALL                                   |
+| Course Number:     | CS-336                                      |
+| Course Title:      | Intro. to Information Assurance             |
+| Work Number:       | LA-03                                       |
+| Work Name:         | SQL Injection Attack Lab - Using Collabtive |
+| Work Version:      | Version 1                                   |
+| Long Date:         | Tuesday, 29 October 2013                    |
+| Author Name:       | Andrew Schwartzmeyer, Shea Newt             |
+
+* Abstract
+* Problem and Background
+* Problem Detail
+* Tasks
+* Answers
+* Code
+* References
+Du, Wenliang. 2006-2013. "SQL Injection Attack Lab - Using
+Collabtive". http://www.cis.syr.edu/~wedu/seed/Labs/Web/SQL_Injection_Collabtive/
