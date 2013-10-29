@@ -38,31 +38,31 @@ a record exists which matches the pair of inputs. If so, it
 authenticates the user. Unfortunately, the function looks like this:
 
 #+BEGIN_SRC php
-      function login($user, $pass)
-      {
-          if (!$user)
-          {
-              return false;
-          }
+function login($user, $pass)
+{
+    if (!$user)
+        {
+            return false;
+        }
   
-  //modified for SQL Lab
-          //$user = mysql_real_escape_string($user);
-          //$pass = mysql_real_escape_string($pass);
-          $pass = sha1($pass);
+    //modified for SQL Lab
+    //$user = mysql_real_escape_string($user);
+    //$pass = mysql_real_escape_string($pass);
+    $pass = sha1($pass);
   
-          $sel1 = mysql_query("SELECT ID,name,locale,lastlogin,gender FROM user WHERE (name =  '$user' OR email = '$user') AND pass = '$pass'");
-          $chk = mysql_fetch_array($sel1);
-          if ($chk["ID"] != "")
-          {
-              // New user session object and cookie creation code
-              // removed for brevity
-              return true;
-          }
-          else
-          {
-              return false;
-          }
-      }
+    $sel1 = mysql_query("SELECT ID,name,locale,lastlogin,gender FROM user WHERE (name =  '$user' OR email = '$user') AND pass = '$pass'");
+    $chk = mysql_fetch_array($sel1);
+    if ($chk["ID"] != "")
+        {
+            // New user session object and cookie creation code
+            // removed for brevity
+            return true;
+        }
+    else
+        {
+            return false;
+        }
+}
 #+END_SRC
 
 Note specifically that the authors of the lab disabled the input
@@ -72,8 +72,7 @@ with the following SQL query executed by the PHP script, where both
 =$user= and =$pass= are susceptible to an injection attack:
 
 #+BEGIN_SRC sql
-  SELECT ID,name,locale,lastlogin,gender FROM user WHERE (name = '$user'
-  OR email = '$user') AND pass = '$pass'"
+SELECT ID,name,locale,lastlogin,gender FROM user WHERE (name = '$user' OR email = '$user') AND pass = '$pass'"
 #+END_SRC
 
 *** Task 1.1: Can you log into another person’s account without knowing the correct password?
@@ -118,38 +117,39 @@ the user with a form for editting their profile's information. This
 form calls the following function:
 
 #+BEGIN_SRC php
-   function edit($id, $name, $realname, $email, $tel1, $tel2, $company, $zip, $gender, $url, $address1, $address2, $state, $country, $tags, $locale, $avatar = "", $rate = 0.0)
-   {
-        $name = mysql_real_escape_string($name);
-        $realname = mysql_real_escape_string($realname);
+function edit($id, $name, $realname, $email, $tel1, $tel2, $company, $zip, $gender, $url, $address1, $address2, $state, $country, $tags, $locale, $avatar = "", $rate = 0.0)
+{
+    $name = mysql_real_escape_string($name);
+    $realname = mysql_real_escape_string($realname);
 
 //modified for SQL Lab
-		//$company = mysql_real_escape_string($company);
-        $email = mysql_real_escape_string($email);
+    //$company = mysql_real_escape_string($company);
+    $email = mysql_real_escape_string($email);
 
 // further escaped parameters removed for brevity...
 
-        $rate = (float) $rate;
-        $id = (int) $id;
+    $rate = (float) $rate;
+    $id = (int) $id;
 
-        if ($avatar != "")
+    if ($avatar != "")
         {
-// same query as below plus setting of avatar; removed for brevity...
+            $upd = mysql_query("UPDATE user SET name='$name',email='$email', tel1='$tel1', tel2='$tel2', company='$company',zip='$zip',gender='$gender',url='$url',adress='$address1',adress2='$address2',state='$state',country='$country',tags='$tags',locale='$locale', avatar='$avatar', rate='$rate' WHERE ID = $id");
         }
-        else
+    else
         {
-            $upd = mysql_query("UPDATE user SET name='$name',email='$email', tel1='$tel1', tel2='$tel2', company='$company',zip='$zip',gender='$gender',url='$url',adress='$address1',adress2='$address2',state='$state',country='$country',tags='$tags',locale='$locale',rate='$rate' WHERE ID = $id");
+            // same query as above minus setting avatar; removed for
+            // brevity
         }
-        if ($upd)
+    if ($upd)
         {
             $this->mylog->add($name, 'user', 2, 0);
             return true;
         }
-        else
+    else
         {
             return false;
         }
-    }
+}
 #+END_SRC
 
 Here we note several things. First, the variable =$company=, which had
@@ -223,66 +223,67 @@ attacks outlined in this lab. However, this function was deprecated as
 of PHP version 5.5.0, and should be replaced with prepared statements.
 
 #+BEGIN_SRC php
-      function login($user, $pass)
-      {
-          if (!$user)
-          {
-              return false;
-          }
+function login($user, $pass)
+{
+    if (!$user)
+        {
+            return false;
+        }
   
-  // modification fixed
-          $user = mysql_real_escape_string($user);
-          $pass = mysql_real_escape_string($pass);
-          $pass = sha1($pass);
+    // modification fixed
+    $user = mysql_real_escape_string($user);
+    $pass = mysql_real_escape_string($pass);
+    $pass = sha1($pass);
   
-          $sel1 = mysql_query("SELECT ID,name,locale,lastlogin,gender FROM user WHERE (name =  '$user' OR email = '$user') AND pass = '$pass'");
-          $chk = mysql_fetch_array($sel1);
-          if ($chk["ID"] != "")
-          {
-              // New user session object and cookie creation code
-              // removed for brevity
-              return true;
-          }
-          else
-          {
-              return false;
-          }
-      }
+    $sel1 = mysql_query("SELECT ID,name,locale,lastlogin,gender FROM user WHERE (name =  '$user' OR email = '$user') AND pass = '$pass'");
+    $chk = mysql_fetch_array($sel1);
+    if ($chk["ID"] != "")
+        {
+            // New user session object and cookie creation code
+            // removed for brevity
+            return true;
+        }
+    else
+        {
+            return false;
+        }
+}
 #+END_SRC
 
 #+BEGIN_SRC php
-   function edit($id, $name, $realname, $email, $tel1, $tel2, $company, $zip, $gender, $url, $address1, $address2, $state, $country, $tags, $locale, $avatar = "", $rate = 0.0)
-   {
-        $name = mysql_real_escape_string($name);
-        $realname = mysql_real_escape_string($realname);
+function edit($id, $name, $realname, $email, $tel1, $tel2, $company, $zip, $gender, $url, $address1, $address2, $state, $country, $tags, $locale, $avatar = "", $rate = 0.0)
+{
+    $name = mysql_real_escape_string($name);
+    $realname = mysql_real_escape_string($realname);
 
 // modification fixed
-        $company = mysql_real_escape_string($company);
-        $email = mysql_real_escape_string($email);
+    $company = mysql_real_escape_string($company);
+    $email = mysql_real_escape_string($email);
 
-// further escaped parameters removed for brevity...
+    // further escaped parameters removed for brevity...
 
-        $rate = (float) $rate;
-        $id = (int) $id;
+    $rate = (float) $rate;
+    $id = (int) $id;
 
-        if ($avatar != "")
+    if ($avatar != "")
         {
-// same query as below plus setting of avatar; removed for brevity...
+            $upd = mysql_query("UPDATE user SET name='$name',email='$email', tel1='$tel1', tel2='$tel2', company='$company',zip='$zip',gender='$gender',url='$url',adress='$address1',adress2='$address2',state='$state',country='$country',tags='$tags',locale='$locale',avatar='$avatar',rate='$rate' WHERE ID = $id");
         }
-        else
+    else
         {
-            $upd = mysql_query("UPDATE user SET name='$name',email='$email', tel1='$tel1', tel2='$tel2', company='$company',zip='$zip',gender='$gender',url='$url',adress='$address1',adress2='$address2',state='$state',country='$country',tags='$tags',locale='$locale',rate='$rate' WHERE ID = $id");
+            // same query as above minus setting avatar; removed for
+            // brevity
         }
-        if ($upd)
+    if ($upd)
         {
             $this->mylog->add($name, 'user', 2, 0);
             return true;
         }
-        else
+    else
         {
             return false;
         }
-    }
+}
 #+END_SRC
 
 *** Prepare Statement
