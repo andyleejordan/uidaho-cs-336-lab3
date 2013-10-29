@@ -203,6 +203,77 @@ penalities by escaping every input string (not just those used for
 user input), and can cause programming headaches when some data is not
 supposed to be escaped, but is regardless.
 
+*** =mysql_real_escape_string()=
+
+As noted above, the SQL injection attacks were made viable
+specifically beacuse of alterations made to the code by the lab's
+authors. Below we present the fixed code that properly uses
+=mysql_real_escape_string()= on all user inputs. Both these functions
+come from =/var/www/SQL/Collabtive/include/class.user.php=.
+
+#+BEGIN_SRC php
+      function login($user, $pass)
+      {
+          if (!$user)
+          {
+              return false;
+          }
+  
+  // modification fixed
+          $user = mysql_real_escape_string($user);
+          $pass = mysql_real_escape_string($pass);
+          $pass = sha1($pass);
+  
+          $sel1 = mysql_query("SELECT ID,name,locale,lastlogin,gender FROM user WHERE (name =  '$user' OR email = '$user') AND pass = '$pass'");
+          $chk = mysql_fetch_array($sel1);
+          if ($chk["ID"] != "")
+          {
+              // New user session object and cookie creation code
+              // removed for brevity
+              return true;
+          }
+          else
+          {
+              return false;
+          }
+      }
+#+END_SRC
+
+#+BEGIN_SRC php
+   function edit($id, $name, $realname, $email, $tel1, $tel2, $company, $zip, $gender, $url, $address1, $address2, $state, $country, $tags, $locale, $avatar = "", $rate = 0.0)
+   {
+        $name = mysql_real_escape_string($name);
+        $realname = mysql_real_escape_string($realname);
+
+// modification fixed
+        $company = mysql_real_escape_string($company);
+        $email = mysql_real_escape_string($email);
+
+// further escaped parameters removed for brevity...
+
+        $rate = (float) $rate;
+        $id = (int) $id;
+
+        if ($avatar != "")
+        {
+// same query as below plus setting of avatar; removed for brevity...
+        }
+        else
+        {
+            $upd = mysql_query("UPDATE user SET name='$name',email='$email', tel1='$tel1', tel2='$tel2', company='$company',zip='$zip',gender='$gender',url='$url',adress='$address1',adress2='$address2',state='$state',country='$country',tags='$tags',locale='$locale',rate='$rate' WHERE ID = $id");
+        }
+        if ($upd)
+        {
+            $this->mylog->add($name, 'user', 2, 0);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+#+END_SRC
+
 * Answers
 
 * Code
