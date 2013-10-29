@@ -92,6 +92,12 @@ anything (or nothing) for the password, and be logged in as the
 =admin= user, because the SQL code that was supposed to check the
 password was disabled by our attack.
 
+*** Task 1.2: Can you find a way to modify the database (still using the above SQL query?)
+
+No, we were not able to modify the database through this particular query. We tried injecting variations of =​admin'); UPDATE user SET pass=​'pass' WHERE name=​'admin'; # '​=, where we added an =UPDATE= or =DELETE FROM= query after the first, completed with a =;=, and still followed by a "#", thus splitting the original query into two separate queries.
+
+**** TODO Figure out what defense mechanism in MySQL is preventing this
+
 * Answers
 
 * Code
