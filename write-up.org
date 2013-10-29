@@ -285,6 +285,33 @@ of PHP version 5.5.0, and should be replaced with prepared statements.
     }
 #+END_SRC
 
+*** Prepare Statement
+
+The modern technique to preventing SQL injection attacks is the use of
+prepared statements, which allow a developer to separate SQL logic
+from user input logic. With this separation, user input types can be
+explicitly specified, making them strongly typed as far as the
+database is concerned. This proess is somewhat similar to a format
+string in other languages.
+
+1. The first step is to "prepare" the SQL query itself, which is done
+   by sending a fully constructed SQL query to the database via the
+   =$stmt = $db->prepare($query)= function (where =$db= is the
+   database connection). Within the prepared query, possible user
+   inputs are declared using a question mark =​input=​?​=.
+2. The next step is to bind those specified paramters, using
+   =bind_param("si", $string, $int)=, which declares the type (string
+   and int) for the list of parameters (=$string, $int=) present in
+   the prepared query.
+3. With the paramters bound, next the developer must call
+   =$stmt->execute()=, to execute the prepared query.
+4. To retrieve the results of the query, they must also be bound:
+   =$stmt->bind_result($output_1, $output_2, ..., $output_n)=, where
+   the bound variables match the data expected to be returned from the
+   query.
+5. Finally, actually getting the query's results requires calling
+   =$results=$stmt->fetch()=.
+
 #+BEGIN_SRC php
       function login($user, $pass)
       {
