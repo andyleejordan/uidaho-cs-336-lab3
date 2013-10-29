@@ -183,6 +183,26 @@ attack, with these steps:
 6. Enjoy successfully logging into ted's account with the password
    'pass'
 
+** Lab Task 3: Countermeasures
+*** Magic Quotes
+
+Re-enabling magic quotes by setting it to "On" in the file
+=/etc/php5/apache2/php.ini= (in the same manner that we originally
+used to turn it off) successfully prevents our SQL injection attacks:
+we were unable to replicate the login prompt exploit, nor the edit
+user form exploit. This is because it "magically" (read:
+automatically) escapes any single quote ('), double quote ("),
+backslash (\), or null characters found in an input string. Although
+an effective countermeasure against our attacks, it has its
+drawbacks. Most notably, since magic quotes may or may not be enabled
+on any particular server, developers of PHP applications must include
+a check of this setting, and incorporate logic to handle both cases,
+lest their application not be portable to different
+environments. Addtionally, magic quotes introduces performance
+penalities by escaping every input string (not just those used for
+user input), and can cause programming headaches when some data is not
+supposed to be escaped, but is regardless.
+
 * Answers
 
 * Code
