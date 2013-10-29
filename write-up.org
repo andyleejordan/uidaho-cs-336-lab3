@@ -1,6 +1,6 @@
 #+TITLE: 2013-FA-CS-336-LA-03-AndyS-SheaN
 #+AUTHOR: Andrew Schwartzmeyer, Shea Newt
-#+OPTIONS: toc:nil
+#+OPTIONS: toc:nil num:nil
 
 | Year and Semester: | 2013 FALL                                   |
 | Course Number:     | CS-336                                      |
@@ -94,9 +94,67 @@ password was disabled by our attack.
 
 *** Task 1.2: Can you find a way to modify the database (still using the above SQL query?)
 
-No, we were not able to modify the database through this particular query. We tried injecting variations of =​admin'); UPDATE user SET pass=​'pass' WHERE name=​'admin'; # '​=, where we added an =UPDATE= or =DELETE FROM= query after the first, completed with a =;=, and still followed by a "#", thus splitting the original query into two separate queries.
+No, we were not able to modify the database through this particular
+query. We tried injecting variations of =​admin'); UPDATE user SET
+pass=​'pass' WHERE name=​'admin'; # '​=, where we added an =UPDATE= or
+=DELETE FROM= query after the first, completed with a =;=, and still
+followed by a "#", thus splitting the original query into two separate
+queries. However, the MySQL database in particular does not allow
+query stacking in the =mysql_query()= function. When we attempt to
+execute two queries sequentially in the same =mysql_query()= function
+call, MySQL itself causes the call, and therefore our attack, to
+fail. Note that this is not necessarily true of other PHP database
+extensions, which may or may not permit such query stacking. Since the
+vulnerable query begins with a =SELECT= statement, and the attack is
+only injectable further down in the query's string, MySQL's defense
+mechanism limits us to only exploiting the =SELECT= query.
 
-**** TODO Figure out what defense mechanism in MySQL is preventing this
+** Lab Task 2: SQL Injection on =UPDATE= Statements
+
+The Collabtive web app also has a SQL injection vulnerability
+elsewhere in the =/var/www/SQL/Collabtive/include/class.user.php=
+file. On the "My Account" page, there is an "Edit" link that presents
+the user with a form for editting their profile's information. This
+form calls the following function:
+
+#+BEGIN_SRC php
+   function edit($id, $name, $realname, $email, $tel1, $tel2, $company, $zip, $gender, $url, $address1, $address2, $state, $country, $tags, $locale, $avatar = "", $rate = 0.0)
+   {
+        $name = mysql_real_escape_string($name);
+        $realname = mysql_real_escape_string($realname);
+
+//modified for SQL Lab
+		//$company = mysql_real_escape_string($company);
+        $email = mysql_real_escape_string($email);
+
+// further escaped parameters removed for brevity...
+
+        $rate = (float) $rate;
+        $id = (int) $id;
+
+        if ($avatar != "")
+        {
+// same query as below plus setting of avatar; removed for brevity...
+        }
+        else
+        {
+            $upd = mysql_query("UPDATE user SET name='$name',email='$email', tel1='$tel1', tel2='$tel2', company='$company',zip='$zip',gender='$gender',url='$url',adress='$address1',adress2='$address2',state='$state',country='$country',tags='$tags',locale='$locale',rate='$rate' WHERE ID = $id");
+        }
+        if ($upd)
+        {
+            $this->mylog->add($name, 'user', 2, 0);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+#+END_SRC
+
+Note that the variable =$company=, which had previously been escaped,
+has been modified by this lab's authors so that it is susceptible to
+an injection attack, as it is no longer escaped.
 
 * Answers
 
