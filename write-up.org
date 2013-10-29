@@ -201,7 +201,9 @@ lest their application not be portable to different
 environments. Addtionally, magic quotes introduces performance
 penalities by escaping every input string (not just those used for
 user input), and can cause programming headaches when some data is not
-supposed to be escaped, but is regardless.
+supposed to be escaped, but is regardless. For at least these reasons,
+magic quotes was depreacted in PHP vrsion 5.3.0, and will not exist in
+PHP 6.
 
 *** =mysql_real_escape_string()=
 
