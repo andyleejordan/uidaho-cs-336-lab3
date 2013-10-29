@@ -152,9 +152,36 @@ form calls the following function:
     }
 #+END_SRC
 
-Note that the variable =$company=, which had previously been escaped,
-has been modified by this lab's authors so that it is susceptible to
-an injection attack, as it is no longer escaped.
+Here we note several things. First, the variable =$company=, which had
+previously been escaped, has been modified by this lab's authors so
+that it is susceptible to an injection attack, as it is no longer
+escaped. Second, because of the previously mentioned MySQL defense
+against query stacking, instead of using the statement =​SELECT ID
+WHERE name=​'ted'​= as a subquery to return the ID of the user "ted" in
+the attack itself (so that we can =UPDATE= the table row corresponding
+exactly to his account), we had to manually experiment to find that
+his ID is 4. Third, since passwords should never be stored as
+plaintext, we had to further inspect the source code of the web
+application to determine that it is using an unsalted SHA1 hash of the
+password to represent it somewhat securely in the database. Thus, to
+set the password to 'pass', since we could not call the PHP =sha1()=
+function within the query, we had to manually hash the string 'pass',
+to obtain the SHA1 hash of '9d4e1e23bd5b727046a9e3b4b7db57bd8d6ee684'.
+
+Combining this information with that learned from our previous attack
+(such as matching quotes where needed, and commenting out parts of a
+query we wish to overwrite), we were able to develop a successful
+attack, with these steps:
+
+1. Log in as a user other than ted, since we want to change his
+   password without his permission
+2. Navigate to "My account" and click "Edit" to bring up the
+   vulnerable form
+3. Replace the user's name in the form with 'ted' (so that the attack retains his name in the database)
+4. Type the following query into the vulnerable "company" field: =​', `pass` = '9d4e1e23bd5b727046a9e3b4b7db57bd8d6ee684' WHERE ID = 4 # '​=
+5. Log out of the current user
+6. Enjoy successfully logging into ted's account with the password
+   'pass'
 
 * Answers
 
