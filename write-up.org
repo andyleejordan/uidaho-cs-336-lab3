@@ -13,9 +13,64 @@
 
 * Abstract
 
+The purpose of this report is to detail the implications of SQL 
+injection vulnerabilities. The SQL injection vulnerabilities explored 
+explicitly in this report allowed unvalidated access to a web 
+application called Collabtive and then the ability to modify a Collabtive 
+user's data/password to the data/password of our chosing. Beyond 
+exploring the danger this kind of vulnerability represents, this report 
+details safeguards such as strong typing and input sanitation that may 
+be used to protect against SQL injection vulnerabilities.
+
 * Problem and Background
 
+The purpose of this lab is to explore SQL injection vulnerabilities.
+SQL injections are injections of code into the database layer of a program 
+made possible by programs whose user input lacks proper sanitation.
+(DU 1)
+
+Programs that use user input to make an SQL query to a database, a web 
+application that validates user names and passwords for example, may be
+exploited by designing input to change the SQL query in order to gain 
+access to or modify something unintended by the original program. 
+(DU 1)
+
+Typical examples of improper input sanitation that can allow an SQL 
+injection attack, according to the lab documentation, include "incorrectly 
+filtered for string literal escape characters embedded in SQL statements 
+or user input [that] is not strongly typed and thereby unexpectedly 
+executed." (DU 1)
+  
 * Problem Detail
+
+For this lab, we were tasked with attacking a web application called 
+Collabtive with SQL injections then revising the code in order to secure
+the SQL query code against injection attacks.
+
+The vulnerabilities exploited here exist in the a web application called 
+Collabtive, included in the lab's VM. Collabtive's vulnerabilities
+include SQL queries used for user authentication at a login prompt and 
+in the "Edit" functionality of a "My Account" page for a given user of the 
+Collabtive application. 
+
+In the first series of tasks we exploit the =SELECT= statement used for
+user authentication at the Collabtive program's login screen, driven by a 
+php file =class.user.php=. The vulnerability lies in the unchecked 
+user input used for the SQL query that assigns a value returned by the 
+query to the variable =$sell= using =SELECT=.
+
+In the second series of tasks we further exploit the file =class.user.php= 
+in the "Edit" functionality of the "My Account" page. This time it is an 
+=UPDATE= statement that the SQL query uses to assigns the value returned 
+by the query to the variable =$company=.
+
+After attacking the Collabtive application, we were tasked with securing it.
+The issues with the Collabtive application represent many of the 
+oversights leading to the still very real threat of SQL injection attacks. 
+These issues were unchecked user input that allowed for unescaped 
+special characters leading to input logic that was not distinct from the
+program's SQL logic. Sanitizing user input to account for these issues and
+explicitly "typing" input. 
 
 * Tasks
 
@@ -38,6 +93,9 @@ a record exists which matches the pair of inputs. If so, it
 authenticates the user. Unfortunately, the function looks like this:
 
 #+BEGIN_SRC php
+// This code was provided by the lab's author Wenliang Du, of Syracuse
+// University under the GNU Free Documentation License
+
 function login($user, $pass)
 {
     if (!$user)
@@ -117,6 +175,9 @@ the user with a form for editting their profile's information. This
 form calls the following function:
 
 #+BEGIN_SRC php
+// This code was provided by the lab's author Wenliang Du, of Syracuse
+// University under the GNU Free Documentation License
+
 function edit($id, $name, $realname, $email, $tel1, $tel2, $company, $zip, $gender, $url, $address1, $address2, $state, $country, $tags, $locale, $avatar = "", $rate = 0.0)
 {
     $name = mysql_real_escape_string($name);
@@ -223,6 +284,9 @@ attacks outlined in this lab. However, this function was deprecated as
 of PHP version 5.5.0, and should be replaced with prepared statements.
 
 #+BEGIN_SRC php
+// This code was provided by the lab's author Wenliang Du, of Syracuse
+// University under the GNU Free Documentation License
+
 function login($user, $pass)
 {
     if (!$user)
@@ -314,6 +378,9 @@ string in other languages.
    =$results=$stmt->fetch()=.
 
 #+BEGIN_SRC php
+// This code was provided by the lab's author Wenliang Du, of Syracuse
+// University under the GNU Free Documentation License
+
 function login($user, $pass)
 {
     if (!$user)
@@ -346,6 +413,9 @@ function login($user, $pass)
 #+END_SRC
 
 #+BEGIN_SRC php
+// This code was provided by the lab's author Wenliang Du, of Syracuse
+// University under the GNU Free Documentation License
+
 function edit($id, $name, $realname, $email, $tel1, $tel2, $company, $zip, $gender, $url, $address1, $address2, $state, $country, $tags, $locale, $avatar = "", $rate = 0.0)
 {
     // the bind_param() function wants a double, not float, though
@@ -385,9 +455,13 @@ function edit($id, $name, $realname, $email, $tel1, $tel2, $company, $zip, $gend
 }
 #+END_SRC
 
+* Code
+
+Detailed in Tasks Section  
+
 * Answers
 
-* Code
+Detailed in Tasks Section
 
 * References
 
