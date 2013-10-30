@@ -13,64 +13,65 @@
 
 * Abstract
 
-The purpose of this report is to detail the implications of SQL 
-injection vulnerabilities. The SQL injection vulnerabilities explored 
-explicitly in this report allowed unvalidated access to a web 
-application called Collabtive and then the ability to modify a Collabtive 
-user's data/password to the data/password of our chosing. Beyond 
-exploring the danger this kind of vulnerability represents, this report 
-details safeguards such as strong typing and input sanitation that may 
-be used to protect against SQL injection vulnerabilities.
+The purpose of this report is to detail the implications of SQL
+injection vulnerabilities. The SQL injection vulnerabilities explored
+explicitly in this report allowed unauthorized access to a web
+application called Collabtive and then the ability to modify a
+Collabtive user's data/password to the data/password of our
+chosing. Beyond exploring the danger this kind of vulnerability
+represents, this report details safeguards such as strong typing and
+input sanitization that may be used to protect against SQL injection
+vulnerabilities.
 
 * Problem and Background
 
 The purpose of this lab is to explore SQL injection vulnerabilities.
-SQL injections are injections of code into the database layer of a program 
-made possible by programs whose user input lacks proper sanitation.
-(DU 1)
+SQL injections are injections of code into the database layer of a
+program made possible by programs whose user input lacks proper
+sanitization. (Du 1)
 
-Programs that use user input to make an SQL query to a database, a web 
-application that validates user names and passwords for example, may be
-exploited by designing input to change the SQL query in order to gain 
-access to or modify something unintended by the original program. 
-(DU 1)
+Programs that use user input to make an SQL query to a database, for
+example, a web application that validates user names and passwords,
+may be exploited by designing input to change the SQL query in order
+to gain access to or modify something unintended by the original
+program.  (Du 1)
 
-Typical examples of improper input sanitation that can allow an SQL 
-injection attack, according to the lab documentation, include "incorrectly 
-filtered for string literal escape characters embedded in SQL statements 
-or user input [that] is not strongly typed and thereby unexpectedly 
-executed." (DU 1)
+Typical examples of improper input sanitization that can allow an SQL
+injection attack, according to the lab documentation, include
+"incorrectly filtered for string literal escape characters embedded in
+SQL statements or user input [that] is not strongly typed and thereby
+unexpectedly executed." (Du 1)
   
 * Problem Detail
 
-For this lab, we were tasked with attacking a web application called 
-Collabtive with SQL injections then revising the code in order to secure
-the SQL query code against injection attacks.
+For this lab, we were tasked with attacking a web application called
+Collabtive with SQL injections, then revising the code in order to
+secure the SQL query against injection attacks.
 
-The vulnerabilities exploited here exist in the a web application called 
-Collabtive, included in the lab's VM. Collabtive's vulnerabilities
-include SQL queries used for user authentication at a login prompt and 
-in the "Edit" functionality of a "My Account" page for a given user of the 
-Collabtive application. 
+The vulnerabilities exploited here exist in the a web application
+called Collabtive, included in the lab's virtual machine. Collabtive's
+vulnerabilities include SQL queries used for user authentication at a
+login prompt and in the "Edit" functionality of a "My Account" page
+for a given user of the Collabtive application.
 
-In the first series of tasks we exploit the =SELECT= statement used for
-user authentication at the Collabtive program's login screen, driven by a 
-php file =class.user.php=. The vulnerability lies in the unchecked 
-user input used for the SQL query that assigns a value returned by the 
-query to the variable =$sell= using =SELECT=.
+In the first series of tasks we exploit the =SELECT= statement used
+for user authentication at the Collabtive program's login screen,
+driven by a PHP file =class.user.php=. The vulnerability lies in the
+unchecked user input used for the SQL query that assigns a value
+returned by the query to the variable =$sell= using =SELECT=.
 
-In the second series of tasks we further exploit the file =class.user.php= 
-in the "Edit" functionality of the "My Account" page. This time it is an 
-=UPDATE= statement that the SQL query uses to assigns the value returned 
-by the query to the variable =$company=.
+In the second series of tasks we further exploit the file
+=class.user.php= in the "Edit" functionality of the "My Account"
+page. This time it is an =UPDATE= statement that the SQL query uses to
+assigns the value returned by the query to the variable =$company=.
 
-After attacking the Collabtive application, we were tasked with securing it.
-The issues with the Collabtive application represent many of the 
-oversights leading to the still very real threat of SQL injection attacks. 
-These issues were unchecked user input that allowed for unescaped 
-special characters leading to input logic that was not distinct from the
-program's SQL logic. Sanitizing user input to account for these issues and
-explicitly "typing" input. 
+After attacking the Collabtive application, we were tasked with
+securing it.  The issues with the Collabtive application represent
+many of the oversights leading to the still very real threat of SQL
+injection attacks.  These issues were unchecked user input that
+allowed for unescaped special characters leading to input logic that
+was not distinct from the program's SQL logic. Sanitizing user input
+to account for these issues and explicitly "typing" input.
 
 * Tasks
 
@@ -125,7 +126,7 @@ function login($user, $pass)
 
 Note specifically that the authors of the lab disabled the input
 sanitization of the variables =$user= and =$pass= by commenting out
-the exeuction of =mysql_real_escape_string()= on them. This leaves us
+the execution of =mysql_real_escape_string()= on them. This leaves us
 with the following SQL query executed by the PHP script, where both
 =$user= and =$pass= are susceptible to an injection attack:
 
@@ -171,7 +172,7 @@ mechanism limits us to only exploiting the =SELECT= query.
 The Collabtive web app also has a SQL injection vulnerability
 elsewhere in the =/var/www/SQL/Collabtive/include/class.user.php=
 file. On the "My Account" page, there is an "Edit" link that presents
-the user with a form for editting their profile's information. This
+the user with a form for editing their profile's information. This
 form calls the following function:
 
 #+BEGIN_SRC php
@@ -259,17 +260,17 @@ drawbacks. Most notably, since magic quotes may or may not be enabled
 on any particular server, developers of PHP applications must include
 a check of this setting, and incorporate logic to handle both cases,
 lest their application not be portable to different
-environments. Addtionally, magic quotes introduces performance
-penalities by escaping every input string (not just those used for
-user input), and can cause programming headaches when some data is not
+environments. Additionally, magic quotes introduces performance
+penalties by escaping every input string (not just those used for user
+input), and can cause programming headaches when some data is not
 supposed to be escaped, but is regardless. For at least these reasons,
-magic quotes was depreacted in PHP vrsion 5.3.0, and will not exist in
+magic quotes was deprecated in PHP version 5.3.0, and will not exist in
 PHP 6.
 
 *** =mysql_real_escape_string()=
 
 As noted above, the SQL injection attacks were made viable
-specifically beacuse of alterations made to the code by the lab's
+specifically because of alterations made to the code by the lab's
 authors. Below we present the fixed code that properly uses
 =mysql_real_escape_string()= on all user inputs. Both these functions
 come from =/var/www/SQL/Collabtive/include/class.user.php=.
@@ -356,7 +357,7 @@ The modern technique to preventing SQL injection attacks is the use of
 prepared statements, which allow a developer to separate SQL logic
 from user input logic. With this separation, user input types can be
 explicitly specified, making them strongly typed as far as the
-database is concerned. This proess is somewhat similar to a format
+database is concerned. This process is somewhat similar to a format
 string in other languages.
 
 1. The first step is to "prepare" the SQL query itself, which is done
@@ -364,11 +365,11 @@ string in other languages.
    =$stmt = $db->prepare($query)= function (where =$db= is the
    database connection). Within the prepared query, possible user
    inputs are declared using a question mark =​input=​?​=.
-2. The next step is to bind those specified paramters, using
+2. The next step is to bind those specified parameters, using
    =bind_param("si", $string, $int)=, which declares the type (string
    and int) for the list of parameters (=$string, $int=) present in
    the prepared query.
-3. With the paramters bound, next the developer must call
+3. With the parameters bound, next the developer must call
    =$stmt->execute()=, to execute the prepared query.
 4. To retrieve the results of the query, they must also be bound:
    =$stmt->bind_result($output_1, $output_2, ..., $output_n)=, where
