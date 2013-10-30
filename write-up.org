@@ -109,7 +109,9 @@ function login($user, $pass)
     //$pass = mysql_real_escape_string($pass);
     $pass = sha1($pass);
   
-    $sel1 = mysql_query("SELECT ID,name,locale,lastlogin,gender FROM user WHERE (name =  '$user' OR email = '$user') AND pass = '$pass'");
+    $sel1 = mysql_query("SELECT ID,name,locale,lastlogin,gender FROM user
+                         WHERE (name =  '$user' OR email = '$user')
+                         AND pass = '$pass'");
     $chk = mysql_fetch_array($sel1);
     if ($chk["ID"] != "")
         {
@@ -131,7 +133,8 @@ with the following SQL query executed by the PHP script, where both
 =$user= and =$pass= are susceptible to an injection attack:
 
 #+BEGIN_SRC sql
-SELECT ID,name,locale,lastlogin,gender FROM user WHERE (name = '$user' OR email = '$user') AND pass = '$pass'"
+SELECT ID,name,locale,lastlogin,gender FROM user WHERE (name = '$user'
+OR email = '$user') AND pass = '$pass'"
 #+END_SRC
 
 *** Task 1.1: Can you log into another person’s account without knowing the correct password?
@@ -179,7 +182,9 @@ form calls the following function:
 // This code was provided by the lab's author Wenliang Du, of Syracuse
 // University under the GNU Free Documentation License
 
-function edit($id, $name, $realname, $email, $tel1, $tel2, $company, $zip, $gender, $url, $address1, $address2, $state, $country, $tags, $locale, $avatar = "", $rate = 0.0)
+function edit($id, $name, $realname, $email, $tel1, $tel2, $company,
+              $zip, $gender, $url, $address1, $address2, $state,
+              $country, $tags, $locale, $avatar = "", $rate = 0.0)
 {
     $name = mysql_real_escape_string($name);
     $realname = mysql_real_escape_string($realname);
@@ -195,7 +200,13 @@ function edit($id, $name, $realname, $email, $tel1, $tel2, $company, $zip, $gend
 
     if ($avatar != "")
         {
-            $upd = mysql_query("UPDATE user SET name='$name',email='$email', tel1='$tel1', tel2='$tel2', company='$company',zip='$zip',gender='$gender',url='$url',adress='$address1',adress2='$address2',state='$state',country='$country',tags='$tags',locale='$locale', avatar='$avatar', rate='$rate' WHERE ID = $id");
+            $upd = mysql_query("UPDATE user SET name='$name', email='$email',
+                                tel1='$tel1', tel2='$tel2', company='$company',
+                                zip='$zip', gender='$gender', url='$url',
+                                adress='$address1', adress2='$address2',
+                                state='$state', country='$country',
+                                tags='$tags', locale='$locale',
+                                avatar='$avatar', rate='$rate' WHERE ID = $id");
         }
     else
         {
@@ -239,8 +250,10 @@ attack, with these steps:
    password without his permission
 2. Navigate to "My account" and click "Edit" to bring up the
    vulnerable form
-3. Replace the user's name in the form with 'ted' (so that the attack retains his name in the database)
-4. Type the following query into the vulnerable "company" field: =​', `pass` = '9d4e1e23bd5b727046a9e3b4b7db57bd8d6ee684' WHERE ID = 4 # '​=
+3. Replace the user's name in the form with 'ted' (so that the attack
+   retains his name in the database)
+4. Type the following query into the vulnerable "company" field:
+   =​', `pass` = '9d4e1e23bd5b727046a9e3b4b7db57bd8d6ee684' WHERE ID = 4 # '​=
 5. Log out of the current user
 6. Enjoy successfully logging into ted's account with the password
    'pass'
@@ -300,7 +313,9 @@ function login($user, $pass)
     $pass = mysql_real_escape_string($pass);
     $pass = sha1($pass);
   
-    $sel1 = mysql_query("SELECT ID,name,locale,lastlogin,gender FROM user WHERE (name =  '$user' OR email = '$user') AND pass = '$pass'");
+    $sel1 = mysql_query("SELECT ID, name, locale, lastlogin, gender
+                         FROM user WHERE (name =  '$user' OR
+                         email = '$user') AND pass = '$pass'");
     $chk = mysql_fetch_array($sel1);
     if ($chk["ID"] != "")
         {
@@ -316,7 +331,9 @@ function login($user, $pass)
 #+END_SRC
 
 #+BEGIN_SRC php
-function edit($id, $name, $realname, $email, $tel1, $tel2, $company, $zip, $gender, $url, $address1, $address2, $state, $country, $tags, $locale, $avatar = "", $rate = 0.0)
+function edit($id, $name, $realname, $email, $tel1, $tel2, $company,
+              $zip, $gender, $url, $address1, $address2, $state,
+              $country, $tags, $locale, $avatar = "", $rate = 0.0)
 {
     $name = mysql_real_escape_string($name);
     $realname = mysql_real_escape_string($realname);
@@ -332,7 +349,13 @@ function edit($id, $name, $realname, $email, $tel1, $tel2, $company, $zip, $gend
 
     if ($avatar != "")
         {
-            $upd = mysql_query("UPDATE user SET name='$name',email='$email', tel1='$tel1', tel2='$tel2', company='$company',zip='$zip',gender='$gender',url='$url',adress='$address1',adress2='$address2',state='$state',country='$country',tags='$tags',locale='$locale',avatar='$avatar',rate='$rate' WHERE ID = $id");
+            $upd = mysql_query("UPDATE user SET name='$name', email='$email',
+                                tel1='$tel1', tel2='$tel2', company='$company',
+                                zip='$zip', gender='$gender', url='$url',
+                                adress='$address1', adress2='$address2',
+                                state='$state', country='$country',
+                                tags='$tags', locale='$locale',
+                                avatar='$avatar', rate='$rate' WHERE ID = $id");
         }
     else
         {
@@ -395,10 +418,12 @@ function login($user, $pass)
     // ./class.datenbank.php. this may need to be passed in, but we
     // will assume we have access to it for the sake of brevity
 
-    $stmt = $conn->prepare("SELECT ID,name,locale,lastlogin,gender FROM user WHERE (name=? OR email=?) AND pass=?");
+    $stmt = $conn->prepare("SELECT ID,name,locale,lastlogin,gender FROM user
+                            WHERE (name=? OR email=?) AND pass=?");
     $stmt->bind_param("sss", $user, $user, sha1($pass));
     $stmt->execute();
-    $stmt->bind_result($bind_ID, $bind_name, $bind_locale, $bind_lastlogin, $bind_gender);
+    $stmt->bind_result($bind_ID, $bind_name, $bind_locale, $bind_lastlogin,
+                       $bind_gender);
     $chk = $stmt->fetch();
     if ($bind_ID != "")
         {
@@ -417,7 +442,9 @@ function login($user, $pass)
 // This code was provided by the lab's author Wenliang Du, of Syracuse
 // University under the GNU Free Documentation License
 
-function edit($id, $name, $realname, $email, $tel1, $tel2, $company, $zip, $gender, $url, $address1, $address2, $state, $country, $tags, $locale, $avatar = "", $rate = 0.0)
+function edit($id, $name, $realname, $email, $tel1, $tel2, $company, $zip,
+              $gender, $url, $address1, $address2, $state, $country, $tags,
+              $locale, $avatar = "", $rate = 0.0)
 {
     // the bind_param() function wants a double, not float, though
     // they are the same internally
@@ -426,22 +453,35 @@ function edit($id, $name, $realname, $email, $tel1, $tel2, $company, $zip, $gend
 
     if ($avatar != "")
         {
-            // again, $conn is instaniated in the datenbank class, and
+            // again, $conn is instantiated in the datenbank class, and
             // may need to be passed, but we are assuming we have
             // access to it for the sake of brevity
 
             // note that the app uses zip as a string, does not use
             // realname although it is passed, and the columns adress
-            // and adress2 are mispelled
+            // and adress2 are misspelled
 
-            $stmt = $conn->prepare("UPDATE user SET name=?, email=?, tel1=?, tel2=?, company=?, zip=?, gender=?, url=?, adress=?, adress2=?, state=?, country=?, tags=?, locale=?, avatar=? rate=? WHERE ID = ?");
-            $stmt->bind_param("sssssssssssssssdi", $name, $email, $tel1, $tel2, $company, $zip, $gender, $url, $address1, $address2, $state, $country, $tags, $locale, $avatar, $rate, $id);
+            $stmt = $conn->prepare("UPDATE user SET name=?, email=?, tel1=?,
+                                    tel2=?, company=?, zip=?, gender=?, url=?,
+                                    adress=?, adress2=?, state=?, country=?,
+                                    tags=?, locale=?, avatar=? rate=?
+                                    WHERE ID = ?");
+            $stmt->bind_param("sssssssssssssssdi", $name, $email, $tel1, $tel2,
+                               $company, $zip, $gender, $url, $address1,
+                               $address2, $state, $country, $tags, $locale,
+                               $avatar, $rate, $id);
             $upd = $stmt->execute();
         }
     else
         {
-            $stmt = $conn->prepare("UPDATE user SET name=?, email=?, tel1=?, tel2=?, company=?, zip=?, gender=?, url=?, adress=?, adress2=?, state=?, country=?, tags=?, locale=?, rate=? WHERE ID = ?");
-            $stmt->bind_param("ssssssssssssssdi", $name, $email, $tel1, $tel2, $company, $zip, $gender, $url, $address1, $address2, $state, $country, $tags, $locale, $rate, $id);
+            $stmt = $conn->prepare("UPDATE user SET name=?, email=?, tel1=?,
+                                    tel2=?, company=?, zip=?, gender=?, url=?,
+                                    adress=?, adress2=?, state=?, country=?,
+                                    tags=?, locale=?, rate=? WHERE ID = ?");
+            $stmt->bind_param("ssssssssssssssdi", $name, $email, $tel1, $tel2,
+                               $company, $zip, $gender, $url, $address1,
+                               $address2, $state, $country, $tags, $locale,
+                               $rate, $id);
             $upd = $stmt->execute();
         }
     if ($upd)
